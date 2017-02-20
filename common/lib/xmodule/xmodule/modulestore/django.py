@@ -61,7 +61,7 @@ class SwitchedSignal(django.dispatch.Signal):
 
     def __init__(self, *args, **kwargs):
         super(SwitchedSignal, self).__init__(*args, **kwargs)
-        self._mute = False
+        self._suppress_signals = False
 
     def off(self):
         self._suppress_signals = True
@@ -134,7 +134,7 @@ class SignalHandler(object):
 
     @classmethod
     def all_signals(cls):
-        cls._mapping.values()
+        return cls._mapping.values()
 
     def send(self, signal_name, **kwargs):
         """

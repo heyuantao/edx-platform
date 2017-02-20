@@ -274,7 +274,7 @@ class ToggleSignalsMixin(object):
     @classmethod
     def signals_off(cls):
         for signal in SignalHandler.all_signals():
-            if signal not in ALLOW_SIGNALS:
+            if signal not in cls.ALLOW_SIGNALS:
                 signal.off()
 
     @classmethod
@@ -357,9 +357,11 @@ class SharedModuleStoreTestCase(ModuleStoreIsolationMixin, ToggleSignalsMixin, C
         """
         super(SharedModuleStoreTestCase, cls).setUpClass()
         cls.start_modulestore_isolation()
+        cls.signals_off()
 
     @classmethod
     def tearDownClass(cls):
+        cls.signals_on()
         cls.end_modulestore_isolation()
         super(SharedModuleStoreTestCase, cls).tearDownClass()
 
