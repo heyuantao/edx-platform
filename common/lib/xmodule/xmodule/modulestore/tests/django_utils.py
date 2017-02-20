@@ -259,7 +259,31 @@ class ModuleStoreIsolationMixin(CacheIsolationMixin):
         cls.end_cache_isolation()
 
 
-class SharedModuleStoreTestCase(ModuleStoreIsolationMixin, CacheIsolationTestCase):
+class ToggleSignalsMixin(object):
+    # If there are signals you want to be allowed to fire for your particular
+    # test (e.g. because it's testing signal-triggered actions), you can specify
+    # them here, like:
+    #
+    #   from xmodule.modulestore.django import SignalHandler
+    #
+    #   class MyPublishTestCase(ToggleSignalsMixin):
+    #
+    #       ALLOW_SIGNALS = [SignalHandler.course_published]
+    ALLOW_SIGNALS = []
+
+    @classmethod
+    def signals_off(cls):
+        for signal in SignalHandler.all_signals():
+            if signal not in ALLOW_SIGNALS:
+                signal.off()
+
+    @classmethod
+    def signals_on(cls):
+        for signal in SignalHandler.all_signals():
+            signal.on()
+
+
+class SharedModuleStoreTestCase(ModuleStoreIsolationMixin, ToggleSignalsMixin, CacheIsolationTestCase):
     """
     Subclass for any test case that uses a ModuleStore that can be shared
     between individual tests. This class ensures that the ModuleStore is cleaned
@@ -298,6 +322,10 @@ class SharedModuleStoreTestCase(ModuleStoreIsolationMixin, CacheIsolationTestCas
     """
     # Tell Django to clean out all databases, not just default
     multi_db = True
+
+    # Override this in your subclass if you want some of the Signals in
+    # modulestore's SignalHandler to fire (e.g. "publish_course")
+    ALLOW_SIGNALS = []
 
     @classmethod
     @contextmanager
@@ -340,31 +368,6 @@ class SharedModuleStoreTestCase(ModuleStoreIsolationMixin, CacheIsolationTestCas
         # that they're recalculated for every test
         OverrideFieldData.provider_classes = None
         super(SharedModuleStoreTestCase, self).setUp()
-
-
-class ToggleSignalsMixin(object):
-
-    # If there are signals you want to be allowed to fire for your particular
-    # test (e.g. because it's testing signal-triggered actions), you can specify
-    # them here, like:
-    #
-    #   from xmodule.modulestore.django import SignalHandler
-    #
-    #   class MyPublishTestCase(ToggleSignalsMixin):
-    #
-    #       ALLOW_SIGNALS = [SignalHandler.course_published]
-    ALLOW_SIGNALS = []
-
-    @classmethod
-    def mute_signals(cls):
-        for signal in SignalHandler.all_signals():
-            if signal not in ALLOW_SIGNALS:
-                signal.mute()
-
-    @classmethod
-    def unmute_signals(cls):
-        for signal in SignalHandler.all_signals():
-            signal.unmute()
 
 
 class ModuleStoreTestCase(ModuleStoreIsolationMixin, ToggleSignalsMixin, TestCase):
@@ -417,11 +420,11 @@ class ModuleStoreTestCase(ModuleStoreIsolationMixin, ToggleSignalsMixin, TestCas
     @classmethod
     def setUpClass(cls):
         super(ModuleStoreTestCase, cls).setUpClass()
-        cls.mute_signals()
+        cls.signals_off()
 
     @classmethod
     def tearDownClass(cls):
-        cls.unmute_signals()
+        cls.signals_on()
         super(ModuleStoreTestCase, cls).tearDownClass()
 
     def setUp(self):

@@ -57,28 +57,28 @@ log = logging.getLogger(__name__)
 ASSET_IGNORE_REGEX = getattr(settings, "ASSET_IGNORE_REGEX", r"(^\._.*$)|(^\.DS_Store$)|(^.*~$)")
 
 
-class MutableSignal(django.dispatch.Signal):
+class SwitchedSignal(django.dispatch.Signal):
 
     def __init__(self, *args, **kwargs):
-        super(MutableSignal, self).__init__(*args, **kwargs)
+        super(SwitchedSignal, self).__init__(*args, **kwargs)
         self._mute = False
 
-    def mute(self):
-        self._mute = True
+    def off(self):
+        self._suppress_signals = True
 
-    def unmute(self):
-        self._mute = False
+    def on(self):
+        self._suppress_signals = False
 
     def send(self, *args, **kwargs):
-        if self._mute:
+        if self._suppress_signals:
             return []
 
-        return super(MutableSignal, self).send(*args, **kwargs)
+        return super(SwitchedSignal, self).send(*args, **kwargs)
 
     def send_robust(self, *args, **kwargs):
-        if self._mute:
+        if self._suppress_signals:
             return []
-        return super(MutableSignal, self).send_robust(*args, **kwargs)
+        return super(SwitchedSignal, self).send_robust(*args, **kwargs)
 
 
 class SignalHandler(object):
@@ -112,11 +112,14 @@ class SignalHandler(object):
        almost no work. Its main job is to kick off the celery task that will
        do the actual work.
     """
-    pre_publish = MutableSignal(providing_args=["course_key"])
-    course_published = MutableSignal(providing_args=["course_key"])
-    course_deleted = MutableSignal(providing_args=["course_key"])
-    library_updated = MutableSignal(providing_args=["library_key"])
-    item_deleted = MutableSignal(providing_args=["usage_key", "user_id"])
+
+    # If you add a new signal, please don't forget to add it to the _mapping
+    # as well.
+    pre_publish = SwitchedSignal(providing_args=["course_key"])
+    course_published = SwitchedSignal(providing_args=["course_key"])
+    course_deleted = SwitchedSignal(providing_args=["course_key"])
+    library_updated = SwitchedSignal(providing_args=["library_key"])
+    item_deleted = SwitchedSignal(providing_args=["usage_key", "user_id"])
 
     _mapping = {
         "pre_publish": pre_publish,
@@ -131,13 +134,7 @@ class SignalHandler(object):
 
     @classmethod
     def all_signals(cls):
-        return [
-            cls.pre_publish,
-            cls.course_published,
-            cls.course_deleted,
-            cls.library_updated,
-            cls.item_deleted
-        ]
+        cls._mapping.values()
 
     def send(self, signal_name, **kwargs):
         """
