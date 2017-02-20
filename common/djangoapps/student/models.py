@@ -1442,6 +1442,28 @@ class CourseEnrollment(models.Model):
         return cls.objects.filter(user=user, is_active=1)
 
     @classmethod
+    def preloaded_enrollments_for_user(cls, user):
+        """
+        List of user's CourseEnrollments, CourseOverviews preloaded if possible.
+
+        We try to preload all CourseOverviews, which are usually lazily loaded
+        as the .course_overview attribute. This is to avoid making an extra
+        query for every enrollment when displaying something like the student
+        dashboard. If some of the CourseOverviews are not found, we make no
+        attempt to initialize them -- we just fall back to existing lazy-load
+        behavior. The goal is to optimize the most common case as simply as
+        possible, without changing any of the existing contracts.
+        """
+        enrollments = list(cls.enrollments_for_user(user))
+        overviews = CourseOverview.get_from_ids_if_exists(
+            enrollment.course_id for enrollment in enrollments
+        )
+        for enrollment in enrollments:
+            enrollment._course_overview = overviews.get(enrollment.course_id)  # pylint: disable=protected-access
+
+        return enrollments
+
+    @classmethod
     def enrollment_status_hash_cache_key(cls, user):
         """ Returns the cache key for the cached enrollment status hash.
 
