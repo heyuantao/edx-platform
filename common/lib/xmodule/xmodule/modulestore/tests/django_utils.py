@@ -194,8 +194,31 @@ TEST_DATA_SPLIT_MODULESTORE = functools.partial(
 )
 
 
+class ToggleSignalsMixin(object):
+    # If there are signals you want to be allowed to fire for your particular
+    # test (e.g. because it's testing signal-triggered actions), you can specify
+    # them here, like:
+    #
+    #   from xmodule.modulestore.django import SignalHandler
+    #
+    #   class MyPublishTestCase(ToggleSignalsMixin):
+    #
+    #       ALLOW_SIGNALS = [SignalHandler.course_published]
+    ALLOW_SIGNALS = []
 
-class ModuleStoreIsolationMixin(CacheIsolationMixin):
+    @classmethod
+    def signals_off(cls):
+        for signal in SignalHandler.all_signals():
+            if signal not in cls.ALLOW_SIGNALS:
+                signal.off()
+
+    @classmethod
+    def signals_on(cls):
+        for signal in SignalHandler.all_signals():
+            signal.on()
+
+
+class ModuleStoreIsolationMixin(CacheIsolationMixin, ToggleSignalsMixin):
     """
     A mixin to be used by TestCases that want to isolate their use of the
     Modulestore.
@@ -259,31 +282,7 @@ class ModuleStoreIsolationMixin(CacheIsolationMixin):
         cls.end_cache_isolation()
 
 
-class ToggleSignalsMixin(object):
-    # If there are signals you want to be allowed to fire for your particular
-    # test (e.g. because it's testing signal-triggered actions), you can specify
-    # them here, like:
-    #
-    #   from xmodule.modulestore.django import SignalHandler
-    #
-    #   class MyPublishTestCase(ToggleSignalsMixin):
-    #
-    #       ALLOW_SIGNALS = [SignalHandler.course_published]
-    ALLOW_SIGNALS = []
-
-    @classmethod
-    def signals_off(cls):
-        for signal in SignalHandler.all_signals():
-            if signal not in cls.ALLOW_SIGNALS:
-                signal.off()
-
-    @classmethod
-    def signals_on(cls):
-        for signal in SignalHandler.all_signals():
-            signal.on()
-
-
-class SharedModuleStoreTestCase(ModuleStoreIsolationMixin, ToggleSignalsMixin, CacheIsolationTestCase):
+class SharedModuleStoreTestCase(ModuleStoreIsolationMixin, CacheIsolationTestCase):
     """
     Subclass for any test case that uses a ModuleStore that can be shared
     between individual tests. This class ensures that the ModuleStore is cleaned
@@ -356,13 +355,13 @@ class SharedModuleStoreTestCase(ModuleStoreIsolationMixin, ToggleSignalsMixin, C
         test data.
         """
         super(SharedModuleStoreTestCase, cls).setUpClass()
-        cls.start_modulestore_isolation()
         cls.signals_off()
+        cls.start_modulestore_isolation()
 
     @classmethod
     def tearDownClass(cls):
-        cls.signals_on()
         cls.end_modulestore_isolation()
+        cls.signals_on()
         super(SharedModuleStoreTestCase, cls).tearDownClass()
 
     def setUp(self):
@@ -372,7 +371,7 @@ class SharedModuleStoreTestCase(ModuleStoreIsolationMixin, ToggleSignalsMixin, C
         super(SharedModuleStoreTestCase, self).setUp()
 
 
-class ModuleStoreTestCase(ModuleStoreIsolationMixin, ToggleSignalsMixin, TestCase):
+class ModuleStoreTestCase(ModuleStoreIsolationMixin, TestCase):
     """
     Subclass for any test case that uses a ModuleStore.
     Ensures that the ModuleStore is cleaned before/after each test.
@@ -421,13 +420,13 @@ class ModuleStoreTestCase(ModuleStoreIsolationMixin, ToggleSignalsMixin, TestCas
 
     @classmethod
     def setUpClass(cls):
-        super(ModuleStoreTestCase, cls).setUpClass()
         cls.signals_off()
+        super(ModuleStoreTestCase, cls).setUpClass()
 
     @classmethod
     def tearDownClass(cls):
-        cls.signals_on()
         super(ModuleStoreTestCase, cls).tearDownClass()
+        cls.signals_on()
 
     def setUp(self):
         """

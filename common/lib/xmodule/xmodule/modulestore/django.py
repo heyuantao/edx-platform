@@ -59,8 +59,9 @@ ASSET_IGNORE_REGEX = getattr(settings, "ASSET_IGNORE_REGEX", r"(^\._.*$)|(^\.DS_
 
 class SwitchedSignal(django.dispatch.Signal):
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, name, *args, **kwargs):
         super(SwitchedSignal, self).__init__(*args, **kwargs)
+        self.name = name
         self._suppress_signals = False
 
     def off(self):
@@ -70,15 +71,32 @@ class SwitchedSignal(django.dispatch.Signal):
         self._suppress_signals = False
 
     def send(self, *args, **kwargs):
+        print "***"
+        print "Send on {} called with {}, {}".format(self, args, kwargs)
+        print "Suppressing: {}".format(self._suppress_signals)
+
         if self._suppress_signals:
             return []
 
+        print "{} is sending {}; {}".format(self, args, kwargs)
         return super(SwitchedSignal, self).send(*args, **kwargs)
 
     def send_robust(self, *args, **kwargs):
+        print "***"
+        print "Send_robust on {} called with {}, {}".format(self, args, kwargs)
+        print "Suppressing: {}".format(self._suppress_signals)
         if self._suppress_signals:
             return []
+
+        print "{} is robustly sending {}; {}".format(self, args, kwargs)
+
         return super(SwitchedSignal, self).send_robust(*args, **kwargs)
+
+    def __unicode__(self):
+        return u"SwitchedSignal('{}'')".format(self.name)
+
+    def __repr__(self):
+        return u"SwitchedSignal('{}'')".format(self.name)
 
 
 class SignalHandler(object):
@@ -115,18 +133,16 @@ class SignalHandler(object):
 
     # If you add a new signal, please don't forget to add it to the _mapping
     # as well.
-    pre_publish = SwitchedSignal(providing_args=["course_key"])
-    course_published = SwitchedSignal(providing_args=["course_key"])
-    course_deleted = SwitchedSignal(providing_args=["course_key"])
-    library_updated = SwitchedSignal(providing_args=["library_key"])
-    item_deleted = SwitchedSignal(providing_args=["usage_key", "user_id"])
+    pre_publish = SwitchedSignal("pre_publish", providing_args=["course_key"])
+    course_published = SwitchedSignal("course_published", providing_args=["course_key"])
+    course_deleted = SwitchedSignal("course_deleted", providing_args=["course_key"])
+    library_updated = SwitchedSignal("library_updated", providing_args=["library_key"])
+    item_deleted = SwitchedSignal("item_deleted", providing_args=["usage_key", "user_id"])
 
     _mapping = {
-        "pre_publish": pre_publish,
-        "course_published": course_published,
-        "course_deleted": course_deleted,
-        "library_updated": library_updated,
-        "item_deleted": item_deleted,
+        signal.name: signal
+        for signal
+        in [pre_publish, course_published, course_deleted, library_updated, item_deleted]
     }
 
     def __init__(self, modulestore_class):
