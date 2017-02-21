@@ -252,6 +252,7 @@ class ModuleStoreIsolationMixin(CacheIsolationMixin, ToggleSignalsMixin):
         :py:meth:`end_modulestore_isolation` is called, this modulestore will
         be flushed (all content will be deleted).
         """
+        cls.signals_off()
         cls.start_cache_isolation()
         override = override_settings(
             MODULESTORE=cls.MODULESTORE(),
@@ -280,6 +281,7 @@ class ModuleStoreIsolationMixin(CacheIsolationMixin, ToggleSignalsMixin):
         assert settings.MODULESTORE == cls.__old_modulestores.pop()
         assert settings.CONTENTSTORE == cls.__old_contentstores.pop()
         cls.end_cache_isolation()
+        cls.signals_on()
 
 
 class SharedModuleStoreTestCase(ModuleStoreIsolationMixin, CacheIsolationTestCase):
@@ -355,13 +357,11 @@ class SharedModuleStoreTestCase(ModuleStoreIsolationMixin, CacheIsolationTestCas
         test data.
         """
         super(SharedModuleStoreTestCase, cls).setUpClass()
-        cls.signals_off()
         cls.start_modulestore_isolation()
 
     @classmethod
     def tearDownClass(cls):
         cls.end_modulestore_isolation()
-        cls.signals_on()
         super(SharedModuleStoreTestCase, cls).tearDownClass()
 
     def setUp(self):
@@ -420,13 +420,11 @@ class ModuleStoreTestCase(ModuleStoreIsolationMixin, TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.signals_off()
         super(ModuleStoreTestCase, cls).setUpClass()
 
     @classmethod
     def tearDownClass(cls):
         super(ModuleStoreTestCase, cls).tearDownClass()
-        cls.signals_on()
 
     def setUp(self):
         """

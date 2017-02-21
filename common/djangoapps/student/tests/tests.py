@@ -51,6 +51,7 @@ from student.views import (
 )
 from util.model_utils import USER_SETTINGS_CHANGED_EVENT_NAME
 from util.testing import EventTestMixin
+from xmodule.modulestore.django import SignalHandler
 from xmodule.modulestore.tests.django_utils import (
     ModuleStoreTestCase,
     ModuleStoreEnum,
@@ -229,7 +230,6 @@ class DashboardTest(ModuleStoreTestCase):
     """
     Tests for dashboard utility functions
     """
-
     def setUp(self):
         super(DashboardTest, self).setUp()
         self.course = CourseFactory.create()
@@ -434,10 +434,11 @@ class DashboardTest(ModuleStoreTestCase):
         # If user has a certificate with valid linked-in config then Add Certificate to LinkedIn button
         # should be visible. and it has URL value with valid parameters.
         self.client.login(username="jack", password="test")
-        LinkedInAddToProfileConfiguration(
+
+        LinkedInAddToProfileConfiguration.objects.create(
             company_identifier='0_mC_o2MizqdtZEmkVXjH4eYwMj4DnkCWrZP_D9',
             enabled=True
-        ).save()
+        )
 
         CourseModeFactory.create(
             course_id=self.course.id,
@@ -474,6 +475,7 @@ class DashboardTest(ModuleStoreTestCase):
             u'pfCertificationUrl=www.edx.org&'
             u'source=o'
         ).format(platform=quote(settings.PLATFORM_NAME.encode('utf-8')))
+
         self.assertContains(response, escape(expected_url))
 
     @unittest.skipUnless(settings.ROOT_URLCONF == 'lms.urls', 'Test only valid in lms')

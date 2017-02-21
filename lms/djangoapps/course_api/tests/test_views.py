@@ -7,6 +7,7 @@ from django.core.urlresolvers import reverse
 from django.test import RequestFactory
 from nose.plugins.attrib import attr
 
+from xmodule.modulestore.django import SignalHandler
 from xmodule.modulestore.tests.django_utils import SharedModuleStoreTestCase, ModuleStoreTestCase
 from .mixins import CourseApiFactoryMixin, TEST_PASSWORD
 from ..views import CourseDetailView
@@ -101,6 +102,7 @@ class CourseListViewTestCaseMultipleCourses(CourseApiTestViewMixin, ModuleStoreT
     Test responses returned from CourseListView (with tests that modify the
     courseware).
     """
+    ALLOW_SIGNALS = [SignalHandler.course_published]
 
     def setUp(self):
         super(CourseListViewTestCaseMultipleCourses, self).setUp()
