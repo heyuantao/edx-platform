@@ -57,7 +57,7 @@ from util.tests.test_date_utils import fake_ugettext, fake_pgettext
 from util.url import reload_django_url_config
 from util.views import ensure_valid_course_key
 from xmodule.modulestore import ModuleStoreEnum
-from xmodule.modulestore.django import modulestore
+from xmodule.modulestore.django import SignalHandler, modulestore
 from xmodule.modulestore.tests.django_utils import TEST_DATA_MIXED_MODULESTORE
 from xmodule.modulestore.tests.django_utils import ModuleStoreTestCase, SharedModuleStoreTestCase
 from xmodule.modulestore.tests.factories import CourseFactory, ItemFactory, check_mongo_calls
@@ -2032,6 +2032,7 @@ class TestRenderXBlock(RenderXBlockTestMixin, ModuleStoreTestCase):
     This class overrides the get_response method, which is used by
     the tests defined in RenderXBlockTestMixin.
     """
+    ALLOW_SIGNALS = [SignalHandler.course_published]
 
     def setUp(self):
         reload_django_url_config()
@@ -2060,7 +2061,6 @@ class TestRenderXBlockSelfPaced(TestRenderXBlock):
     Test rendering XBlocks for a self-paced course. Relies on the query
     count assertions in the tests defined by RenderXBlockMixin.
     """
-
     def setUp(self):
         super(TestRenderXBlockSelfPaced, self).setUp()
         SelfPacedConfiguration(enabled=True).save()

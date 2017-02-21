@@ -8,6 +8,7 @@ from django.test.client import RequestFactory
 from openedx.core.djangoapps.content.block_structure.api import clear_course_from_cache
 from student.tests.factories import UserFactory
 from xmodule.modulestore import ModuleStoreEnum
+from xmodule.modulestore.django import SignalHandler
 from xmodule.modulestore.tests.django_utils import SharedModuleStoreTestCase
 from xmodule.modulestore.tests.factories import SampleCourseFactory, check_mongo_calls
 
@@ -105,6 +106,8 @@ class TestGetBlocksQueryCounts(SharedModuleStoreTestCase):
     """
     Tests query counts for the get_blocks function.
     """
+    ALLOW_SIGNALS = [SignalHandler.course_published]
+
     def setUp(self):
         super(TestGetBlocksQueryCounts, self).setUp()
 
