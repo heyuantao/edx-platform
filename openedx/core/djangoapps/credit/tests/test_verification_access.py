@@ -240,6 +240,8 @@ class WriteOnPublishTest(ModuleStoreTestCase):
     """
     MODULESTORE = TEST_DATA_SPLIT_MODULESTORE
 
+    ALLOW_SIGNALS = [SignalHandler.course_published, SignalHandler.pre_publish]
+
     @patch.dict(settings.FEATURES, {"ENABLE_COURSEWARE_INDEX": False})
     def setUp(self):
         super(WriteOnPublishTest, self).setUp()
