@@ -20,6 +20,7 @@ from xmodule.modulestore.tests.django_utils import (
     ModuleStoreTestCase,
     TEST_DATA_SPLIT_MODULESTORE
 )
+from xmodule.modulestore.django import SignalHandler
 from xmodule.modulestore.tests.factories import CourseFactory
 from opaque_keys.edx.keys import CourseKey
 from xmodule.modulestore.django import modulestore
@@ -75,6 +76,8 @@ class TestGetCourseChapters(CcxTestCase):
     """
     Tests for the `get_course_chapters` util function
     """
+    ALLOW_SIGNALS = [SignalHandler.course_published]
+
     def setUp(self):
         """
         Set up tests

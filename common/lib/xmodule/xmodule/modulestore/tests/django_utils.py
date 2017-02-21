@@ -213,8 +213,9 @@ class ToggleSignalsMixin(object):
                 signal.off()
 
     @classmethod
-    def signals_on(cls):
-        for signal in SignalHandler.all_signals():
+    def signals_on(cls, *signals):
+        signals = signals or SignalHandler.all_signals()
+        for signal in signals:
             signal.on()
 
 

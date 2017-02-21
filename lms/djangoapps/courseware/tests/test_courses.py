@@ -28,7 +28,7 @@ from lms.djangoapps.courseware.courseware_access_exception import CoursewareAcce
 from openedx.core.djangolib.testing.utils import get_mock_request
 from openedx.core.lib.courses import course_image_url
 from student.tests.factories import UserFactory
-from xmodule.modulestore.django import _get_modulestore_branch_setting, modulestore
+from xmodule.modulestore.django import SignalHandler, _get_modulestore_branch_setting, modulestore
 from xmodule.modulestore import ModuleStoreEnum
 from xmodule.modulestore.xml_importer import import_course_from_xml
 from xmodule.modulestore.tests.django_utils import ModuleStoreTestCase
@@ -47,6 +47,7 @@ TEST_DATA_DIR = settings.COMMON_TEST_DATA_ROOT
 @ddt.ddt
 class CoursesTest(ModuleStoreTestCase):
     """Test methods related to fetching courses."""
+    ALLOW_SIGNALS = [SignalHandler.course_published]
 
     @override_settings(CMS_BASE=CMS_BASE_TEST)
     def test_get_cms_course_block_link(self):

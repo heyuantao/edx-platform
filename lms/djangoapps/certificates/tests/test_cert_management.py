@@ -12,6 +12,7 @@ from badges.events.course_complete import get_completion_badge
 from badges.models import BadgeAssertion
 from badges.tests.factories import BadgeAssertionFactory, CourseCompleteImageConfigurationFactory
 from lms.djangoapps.grades.tests.utils import mock_passing_grade
+from xmodule.modulestore.django import SignalHandler
 from xmodule.modulestore.tests.django_utils import ModuleStoreTestCase
 from xmodule.modulestore.tests.factories import CourseFactory, check_mongo_calls, ItemFactory
 from student.tests.factories import UserFactory, CourseEnrollmentFactory
@@ -69,6 +70,7 @@ class CertificateManagementTest(ModuleStoreTestCase):
 @ddt.ddt
 class ResubmitErrorCertificatesTest(CertificateManagementTest):
     """Tests for the resubmit_error_certificates management command. """
+    ALLOW_SIGNALS = [SignalHandler.course_published]
 
     @ddt.data(CourseMode.HONOR, CourseMode.VERIFIED)
     def test_resubmit_error_certificate(self, mode):

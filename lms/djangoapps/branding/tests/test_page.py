@@ -20,6 +20,7 @@ from courseware.tests.helpers import LoginEnrollmentTestCase
 from milestones.tests.utils import MilestonesTestCaseMixin
 from openedx.core.djangoapps.site_configuration.tests.mixins import SiteMixin
 from util.milestones_helpers import set_prerequisite_courses
+from xmodule.modulestore.django import SignalHandler
 from xmodule.modulestore.tests.django_utils import ModuleStoreTestCase
 from xmodule.modulestore.tests.factories import CourseFactory
 
@@ -117,6 +118,8 @@ class PreRequisiteCourseCatalog(ModuleStoreTestCase, LoginEnrollmentTestCase, Mi
     Test to simulate and verify fix for disappearing courses in
     course catalog when using pre-requisite courses
     """
+    ALLOW_SIGNALS = [SignalHandler.course_published]
+
     @patch.dict(settings.FEATURES, {'ENABLE_PREREQUISITE_COURSES': True})
     def test_course_with_prereq(self):
         """

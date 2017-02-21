@@ -21,6 +21,7 @@ from microsite_configuration import microsite
 from student.models import CourseEnrollment
 from student.tests.factories import UserFactory
 from util.testing import EventTestMixin
+from xmodule.modulestore.django import SignalHandler
 from xmodule.modulestore.tests.factories import CourseFactory
 from xmodule.modulestore.tests.django_utils import (
     ModuleStoreTestCase,
@@ -88,6 +89,7 @@ class WebCertificateTestMixin(object):
 @attr(shard=1)
 class CertificateDownloadableStatusTests(WebCertificateTestMixin, ModuleStoreTestCase):
     """Tests for the `certificate_downloadable_status` helper function. """
+    ALLOW_SIGNALS = [SignalHandler.course_published]
 
     def setUp(self):
         super(CertificateDownloadableStatusTests, self).setUp()
@@ -457,6 +459,7 @@ class GenerateUserCertificatesTest(EventTestMixin, WebCertificateTestMixin, Modu
     """Tests for generating certificates for students. """
 
     ERROR_REASON = "Kaboom!"
+    ALLOW_SIGNALS = [SignalHandler.course_published]
 
     def setUp(self):  # pylint: disable=arguments-differ
         super(GenerateUserCertificatesTest, self).setUp('certificates.api.tracker')

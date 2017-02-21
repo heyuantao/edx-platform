@@ -15,7 +15,7 @@ from django.conf import settings
 from django.core.management import call_command
 
 from xmodule.modulestore import ModuleStoreEnum
-from xmodule.modulestore.django import modulestore
+from xmodule.modulestore.django import SignalHandler, modulestore
 from xmodule.modulestore.tests.django_utils import SharedModuleStoreTestCase
 from xmodule.modulestore.tests.django_utils import (
     TEST_DATA_MONGO_MODULESTORE, TEST_DATA_SPLIT_MODULESTORE
@@ -38,6 +38,7 @@ class CommandsTestBase(SharedModuleStoreTestCase):
     """
     __test__ = False
     url_name = '2012_Fall'
+    ALLOW_SIGNALS = [SignalHandler.course_published]
 
     @classmethod
     def setUpClass(cls):

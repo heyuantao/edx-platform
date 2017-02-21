@@ -10,6 +10,7 @@ from courseware.tests.helpers import LoginEnrollmentTestCase
 from course_modes.models import CourseMode
 from xmodule.course_module import (
     CATALOG_VISIBILITY_CATALOG_AND_ABOUT, CATALOG_VISIBILITY_NONE)
+from xmodule.modulestore.django import SignalHandler
 from xmodule.modulestore.tests.factories import CourseFactory, ItemFactory
 from xmodule.modulestore.tests.django_utils import SharedModuleStoreTestCase
 
@@ -21,6 +22,7 @@ class TestSites(SharedModuleStoreTestCase, LoginEnrollmentTestCase):
     """
 
     STUDENT_INFO = [('view@test.com', 'foo'), ('view2@test.com', 'foo')]
+    ALLOW_SIGNALS = [SignalHandler.course_published]
 
     @classmethod
     def setUpClass(cls):
