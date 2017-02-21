@@ -52,7 +52,7 @@ class CourseOverviewTestCase(ModuleStoreTestCase):
 
     COURSE_OVERVIEW_TABS = {'courseware', 'info', 'textbooks', 'discussion', 'wiki', 'progress'}
 
-    ALLOW_SIGNALS = [SignalHandler.course_published]
+    ALLOW_SIGNALS = [SignalHandler.course_published, SignalHandler.course_deleted]
 
     def check_course_overview_against_course(self, course):
         """

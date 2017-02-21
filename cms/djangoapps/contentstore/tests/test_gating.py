@@ -5,6 +5,7 @@ from contentstore.signals import handle_item_deleted
 from milestones.tests.utils import MilestonesTestCaseMixin
 from mock import patch
 from openedx.core.lib.gating import api as gating_api
+from xmodule.modulestore.django import SignalHandler
 from xmodule.modulestore.tests.django_utils import ModuleStoreTestCase
 from xmodule.modulestore.tests.factories import ItemFactory, CourseFactory
 
@@ -13,6 +14,8 @@ class TestHandleItemDeleted(ModuleStoreTestCase, MilestonesTestCaseMixin):
     """
     Test case for handle_score_changed django signal handler
     """
+    ALLOW_SIGNALS = [SignalHandler.course_published]
+
     def setUp(self):
         """
         Initial data setup

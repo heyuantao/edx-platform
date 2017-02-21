@@ -5,6 +5,7 @@ import ddt
 from mock import patch
 from waffle.testutils import override_switch
 
+from xmodule.modulestore.django import SignalHandler
 from xmodule.modulestore.exceptions import ItemNotFoundError
 from xmodule.modulestore.tests.django_utils import ModuleStoreTestCase
 from xmodule.modulestore.tests.factories import CourseFactory
@@ -19,6 +20,8 @@ class CourseBlocksSignalTest(ModuleStoreTestCase):
     """
     Tests for the Course Blocks signal
     """
+    ALLOW_SIGNALS = [SignalHandler.course_published, SignalHandler.course_deleted]
+
     def setUp(self):
         super(CourseBlocksSignalTest, self).setUp()
         self.course = CourseFactory.create()

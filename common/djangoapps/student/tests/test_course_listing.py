@@ -15,7 +15,7 @@ from student.tests.factories import UserFactory
 from student.views import get_course_enrollments
 from xmodule.error_module import ErrorDescriptor
 from xmodule.modulestore import ModuleStoreEnum
-from xmodule.modulestore.django import modulestore
+from xmodule.modulestore.django import SignalHandler, modulestore
 from xmodule.modulestore.tests.django_utils import ModuleStoreTestCase
 from xmodule.modulestore.tests.factories import CourseFactory
 from util.milestones_helpers import (
@@ -29,6 +29,8 @@ class TestCourseListing(ModuleStoreTestCase, MilestonesTestCaseMixin):
     """
     Unit tests for getting the list of courses for a logged in user
     """
+    ALLOW_SIGNALS = [SignalHandler.course_deleted]
+
     def setUp(self):
         """
         Add a student & teacher

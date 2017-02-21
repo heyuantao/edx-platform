@@ -29,7 +29,7 @@ from student.tests.factories import UserFactory
 from util.date_utils import get_default_time_display
 from xmodule.modulestore import ModuleStoreEnum
 from xmodule.modulestore.exceptions import ItemNotFoundError
-from xmodule.modulestore.django import modulestore
+from xmodule.modulestore.django import SignalHandler, modulestore
 from xmodule.modulestore.tests.factories import CourseFactory, ItemFactory, LibraryFactory
 
 
@@ -331,6 +331,8 @@ class TestCourseOutline(CourseTestCase):
     """
     Unit tests for the course outline.
     """
+    ALLOW_SIGNALS = [SignalHandler.course_published]
+
     def setUp(self):
         """
         Set up the for the course outline tests.
@@ -578,6 +580,8 @@ class TestCourseReIndex(CourseTestCase):
     Unit tests for the course outline.
     """
     SUCCESSFUL_RESPONSE = _("Course has been successfully reindexed.")
+
+    ALLOW_SIGNALS = [SignalHandler.course_published]
 
     def setUp(self):
         """

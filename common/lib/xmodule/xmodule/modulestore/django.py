@@ -93,10 +93,10 @@ class SwitchedSignal(django.dispatch.Signal):
         return super(SwitchedSignal, self).send_robust(*args, **kwargs)
 
     def __unicode__(self):
-        return u"SwitchedSignal('{}'')".format(self.name)
+        return u"SwitchedSignal('{}')".format(self.name)
 
     def __repr__(self):
-        return u"SwitchedSignal('{}'')".format(self.name)
+        return u"SwitchedSignal('{}')".format(self.name)
 
 
 class SignalHandler(object):
