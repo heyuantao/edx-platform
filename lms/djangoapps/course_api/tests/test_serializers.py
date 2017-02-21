@@ -14,6 +14,7 @@ from rest_framework.request import Request
 
 from xblock.core import XBlock
 from xmodule.course_module import DEFAULT_START_DATE
+from xmodule.modulestore.django import SignalHandler
 from xmodule.modulestore.tests.django_utils import ModuleStoreTestCase
 from xmodule.modulestore.tests.factories import check_mongo_calls
 
@@ -30,6 +31,8 @@ class TestCourseSerializer(CourseApiFactoryMixin, ModuleStoreTestCase):
     expected_mongo_calls = 0
     maxDiff = 5000  # long enough to show mismatched dicts, in case of error
     serializer_class = CourseSerializer
+
+    ALLOW_SIGNALS = [SignalHandler.course_published]
 
     def setUp(self):
         super(TestCourseSerializer, self).setUp()

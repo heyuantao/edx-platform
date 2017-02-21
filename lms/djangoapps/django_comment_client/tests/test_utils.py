@@ -31,7 +31,7 @@ from student.roles import CourseStaffRole
 from xmodule.modulestore import ModuleStoreEnum
 from xmodule.modulestore.tests.factories import CourseFactory, ItemFactory, ToyCourseFactory
 from xmodule.modulestore.tests.django_utils import ModuleStoreTestCase, TEST_DATA_MIXED_MODULESTORE
-from xmodule.modulestore.django import modulestore
+from xmodule.modulestore.django import SignalHandler, modulestore
 from lms.djangoapps.teams.tests.factories import CourseTeamFactory
 
 
@@ -210,6 +210,8 @@ class CachedDiscussionIdMapTestCase(ModuleStoreTestCase):
     """
     Tests that using the cache of discussion id mappings has the same behavior as searching through the course.
     """
+    ALLOW_SIGNALS = [SignalHandler.course_published]
+
     def setUp(self):
         super(CachedDiscussionIdMapTestCase, self).setUp()
 

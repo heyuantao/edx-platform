@@ -16,6 +16,7 @@ from django.core.urlresolvers import reverse
 from rest_framework.test import APITestCase
 from rest_framework import status
 from django.conf import settings
+from xmodule.modulestore.django import SignalHandler
 from xmodule.modulestore.tests.django_utils import ModuleStoreTestCase
 from xmodule.modulestore.tests.factories import CourseFactory, check_mongo_calls_range
 from django.test.utils import override_settings
@@ -142,6 +143,7 @@ class EnrollmentTest(EnrollmentTestMixin, ModuleStoreTestCase, APITestCase):
     OTHER_EMAIL = "jane@example.com"
 
     ENABLED_CACHES = ['default', 'mongo_metadata_inheritance', 'loc_cache']
+    ALLOW_SIGNALS = [SignalHandler.course_published]
 
     def setUp(self):
         """ Create a course and user, then log in. """
