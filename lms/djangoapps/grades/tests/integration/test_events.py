@@ -8,6 +8,7 @@ from lms.djangoapps.instructor.enrollment import reset_student_attempts
 from lms.djangoapps.instructor_task.api import submit_rescore_problem_for_student
 from mock import patch
 from openedx.core.djangolib.testing.utils import get_mock_request
+from xmodule.modulestore.django import SignalHandler
 from xmodule.modulestore.tests.django_utils import SharedModuleStoreTestCase
 from xmodule.modulestore.tests.factories import CourseFactory, ItemFactory
 
@@ -26,6 +27,8 @@ class GradesEventIntegrationTest(ProblemSubmissionTestMixin, SharedModuleStoreTe
     Tests integration between the eventing in various layers
     of the grading infrastructure.
     """
+    ALLOW_SIGNALS = [SignalHandler.course_published]
+
     @classmethod
     def reset_course(cls):
         """

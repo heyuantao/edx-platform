@@ -11,7 +11,7 @@ from copy import deepcopy
 
 from student.tests.factories import UserFactory
 from xmodule.modulestore import ModuleStoreEnum
-from xmodule.modulestore.django import modulestore
+from xmodule.modulestore.django import SignalHandler, modulestore
 from xmodule.modulestore.tests.django_utils import SharedModuleStoreTestCase
 from xmodule.modulestore.tests.factories import check_mongo_calls
 
@@ -28,6 +28,8 @@ class GradesTransformerTestCase(CourseStructureTestCase):
     """
 
     TRANSFORMER_CLASS_TO_TEST = GradesTransformer
+
+    ALLOW_SIGNALS = [SignalHandler.course_published]
 
     problem_metadata = {
         u'graded': True,

@@ -4,6 +4,7 @@ Unit tests for the gating feature in Studio
 import json
 
 from mock import patch
+from xmodule.modulestore.django import SignalHandler
 from xmodule.modulestore.tests.django_utils import TEST_DATA_SPLIT_MODULESTORE
 from xmodule.modulestore.tests.factories import ItemFactory
 from contentstore.tests.utils import CourseTestCase
@@ -17,6 +18,7 @@ class TestSubsectionGating(CourseTestCase):
     Tests for the subsection gating feature
     """
     MODULESTORE = TEST_DATA_SPLIT_MODULESTORE
+    ALLOW_SIGNALS = [SignalHandler.item_deleted]
 
     def setUp(self):
         """

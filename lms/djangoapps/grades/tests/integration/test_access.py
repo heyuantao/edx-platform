@@ -6,7 +6,7 @@ Test grading with access changes.
 from capa.tests.response_xml_factory import MultipleChoiceResponseXMLFactory
 from lms.djangoapps.course_blocks.api import get_course_blocks
 from openedx.core.djangolib.testing.utils import get_mock_request
-from xmodule.modulestore.django import modulestore
+from xmodule.modulestore.django import SignalHandler, modulestore
 from xmodule.modulestore.tests.django_utils import SharedModuleStoreTestCase
 from xmodule.modulestore.tests.factories import CourseFactory, ItemFactory
 
@@ -22,6 +22,8 @@ class GradesAccessIntegrationTest(ProblemSubmissionTestMixin, SharedModuleStoreT
     """
     Tests integration between grading and block access.
     """
+    ALLOW_SIGNALS = [SignalHandler.course_published]
+
     @classmethod
     def setUpClass(cls):
         super(GradesAccessIntegrationTest, cls).setUpClass()

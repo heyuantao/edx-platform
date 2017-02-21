@@ -1138,6 +1138,7 @@ class ProgressPageTests(ModuleStoreTestCase):
     """
 
     ENABLED_CACHES = ['default', 'mongo_modulestore_inheritance', 'loc_cache']
+    ALLOW_SIGNALS = [SignalHandler.course_published]
 
     def setUp(self):
         super(ProgressPageTests, self).setUp()
@@ -2032,8 +2033,6 @@ class TestRenderXBlock(RenderXBlockTestMixin, ModuleStoreTestCase):
     This class overrides the get_response method, which is used by
     the tests defined in RenderXBlockTestMixin.
     """
-    ALLOW_SIGNALS = [SignalHandler.course_published]
-
     def setUp(self):
         reload_django_url_config()
         super(TestRenderXBlock, self).setUp()

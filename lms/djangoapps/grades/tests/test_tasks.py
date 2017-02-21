@@ -20,7 +20,7 @@ from track.event_transaction_utils import (
     create_new_event_transaction_id,
     get_event_transaction_id,
 )
-from xmodule.modulestore.django import modulestore
+from xmodule.modulestore.django import SignalHandler, modulestore
 from xmodule.modulestore import ModuleStoreEnum
 from xmodule.modulestore.tests.django_utils import ModuleStoreTestCase
 from xmodule.modulestore.tests.factories import CourseFactory, ItemFactory, check_mongo_calls
@@ -37,6 +37,8 @@ class RecalculateSubsectionGradeTest(ModuleStoreTestCase):
     """
     Ensures that the recalculate subsection grade task functions as expected when run.
     """
+    ALLOW_SIGNALS = [SignalHandler.pre_publish, SignalHandler.course_published]
+
     def setUp(self):
         super(RecalculateSubsectionGradeTest, self).setUp()
         self.user = UserFactory()
