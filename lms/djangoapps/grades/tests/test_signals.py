@@ -130,6 +130,8 @@ class ScoreChangedSignalRelayTest(TestCase):
             'modified': FROZEN_NOW_TIMESTAMP,
             'score_db_table': 'submissions',
         }
+        if handler == submissions_score_reset_handler:
+            expected_set_kwargs['score_deleted'] = True
         self.signal_mock.assert_called_once_with(**expected_set_kwargs)
         self.get_user_mock.assert_called_once_with(kwargs['anonymous_user_id'])
 
