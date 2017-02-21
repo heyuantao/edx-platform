@@ -14,6 +14,7 @@ from django.template import defaultfilters
 from django.test import RequestFactory, override_settings
 from milestones.tests.utils import MilestonesTestCaseMixin
 from xmodule.course_module import DEFAULT_START_DATE
+from xmodule.modulestore.django import SignalHandler
 from xmodule.modulestore.tests.factories import ItemFactory, CourseFactory
 
 from certificates.api import generate_user_certificates
@@ -87,6 +88,7 @@ class TestUserEnrollmentApi(UrlResetMixin, MobileAPITestCase, MobileAuthUserTest
     NEXT_WEEK = datetime.datetime.now(pytz.UTC) + datetime.timedelta(days=7)
     LAST_WEEK = datetime.datetime.now(pytz.UTC) - datetime.timedelta(days=7)
     ADVERTISED_START = "Spring 2016"
+    ALLOW_SIGNALS = [SignalHandler.course_published]
 
     @patch.dict(settings.FEATURES, {"ENABLE_DISCUSSION_SERVICE": True})
     def setUp(self, *args, **kwargs):
@@ -468,6 +470,8 @@ class TestCourseEnrollmentSerializer(MobileAPITestCase, MilestonesTestCaseMixin)
     """
     Test the course enrollment serializer
     """
+    ALLOW_SIGNALS = [SignalHandler.course_published]
+
     def setUp(self):
         super(TestCourseEnrollmentSerializer, self).setUp()
         self.login_and_enroll()
