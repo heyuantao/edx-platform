@@ -163,6 +163,8 @@ class IndexPageCourseCardsSortingTests(ModuleStoreTestCase):
     """
     Test for Index page course cards sorting
     """
+    ALLOW_SIGNALS = [SignalHandler.course_published]
+
     def setUp(self):
         super(IndexPageCourseCardsSortingTests, self).setUp()
         self.starting_later = CourseFactory.create(

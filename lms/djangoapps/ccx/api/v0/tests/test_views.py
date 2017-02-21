@@ -51,7 +51,7 @@ from student.roles import (
     CourseStaffRole,
 )
 from student.tests.factories import AdminFactory
-
+from xmodule.modulestore.django import SignalHandler
 
 USER_PASSWORD = 'test'
 AUTH_ATTRS = ('auth', 'auth_header_oauth2_provider')
@@ -183,6 +183,8 @@ class CcxListTest(CcxRestApiTest):
     """
     Test for the CCX REST APIs
     """
+    ALLOW_SIGNALS = [SignalHandler.course_published]
+
     @classmethod
     def setUpClass(cls):
         super(CcxListTest, cls).setUpClass()
@@ -892,6 +894,8 @@ class CcxDetailTest(CcxRestApiTest):
     """
     Test for the CCX REST APIs
     """
+    ALLOW_SIGNALS = [SignalHandler.course_published]
+
     def setUp(self):
         """
         Set up tests
