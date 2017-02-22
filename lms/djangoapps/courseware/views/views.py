@@ -742,7 +742,7 @@ def program_marketing(request, program_uuid):
         'banner_image': program_data.get('banner_image', {}).get('large', {}).get('url', '')
     }
 
-    return render_to_response('courseware/program_detail.html', context)
+    return render_to_response('courseware/program_marketing.html', context)
 
 
 @transaction.non_atomic_requests

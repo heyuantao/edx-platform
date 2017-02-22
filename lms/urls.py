@@ -427,7 +427,7 @@ urlpatterns += (
     ),
 
     url(
-        r'^programs/{}/detail$'.format(
+        r'^programs/{}/about'.format(
             r'(?P<program_uuid>[0-9a-f-]+)',
         ),
         'courseware.views.views.program_marketing',
