@@ -35,7 +35,7 @@ def sync_on_notification(page, style='default', wait_for_hide=False):
         return page.q(css=css_string.format(el_class)).present
 
     # Wait for the notification to show.
-    # If you miss it though, don't raise an error.
+    # This notification appears very quickly and maybe missed. Don't raise an error.
     try:
         page.wait_for(
             lambda: notification_has_class(style, shown_class),
